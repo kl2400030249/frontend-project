@@ -1,0 +1,141 @@
+/* ===== GLOBAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f5f7fb;
+  color: #333;
+}
+
+/* ===== LAYOUT HELPERS ===== */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  padding-top: 30px;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: #1e3a8a;
+  padding: 14px 20px;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-links a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #e3eaff;
+  font-weight: 500;
+  transition: 0.25s;
+}
+
+.navbar-links a:hover {
+  color: #ffffff;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+.btn-primary {
+  background: #1e40af;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1e3a8a;
+}
+
+.btn-success {
+  background: #059669;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #047857;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.20s ease, box-shadow 0.25s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 7px 15px rgba(0,0,0,0.12);
+}
+
+/* ===== FORMS ===== */
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.25s;
+  margin-top: 10px;
+}
+
+input:focus, textarea:focus {
+  border-color: #2563eb;
+}
+
+/* ===== TITLES ===== */
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.sub-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* ===== WORKSHOP DETAILS ===== */
+.material-list li {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .navbar-links {
+    margin-top: 10px;
+  }
+}
