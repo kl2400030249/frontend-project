@@ -1,14 +1,16 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 export default function WorkshopCard({ data }) {
+  // data: { id, title, date, desc }
   return (
-    <div className="card">
+    <article className="card">
       <h3 className="sub-title">{data.title}</h3>
-      <p style={{ marginBottom: "10px" }}>📅 {data.date}</p>
-
-      <Link to={`/workshop/${data.id}`}>
-        <button className="btn btn-primary">View Details</button>
-      </Link>
-    </div>
+      <p className="muted">📅 {data.date}</p>
+      {data.desc && <p className="muted" style={{ marginTop: 8 }}>{data.desc}</p>}
+      <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
+        <Link to={`/workshop/${data.id}`} className="btn btn-primary">View Details</Link>
+      </div>
+    </article>
   );
 }
