@@ -5,17 +5,19 @@ export default function Workshops() {
   const [workshops, setWorkshops] = useState([]);
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts?_limit=6")
+    const urlBase = import.meta.env.VITE_API_URL || '';
+    fetch(urlBase + '/api/workshops')
       .then((res) => res.json())
       .then((data) =>
         setWorkshops(
           data.map((item) => ({
-            id: item.id,
+            id: item._id || item.id,
             title: item.title,
-            date: "2025-04-01",
+            date: item.date ? item.date.split('T')[0] : 'TBD',
+            desc: item.desc || ''
           }))
         )
-      );
+      ).catch(() => setWorkshops([]));
   }, []);
 
   return (

@@ -5,27 +5,36 @@ export default function CreateWorkshop() {
   const [date, setDate] = useState("");
   const [desc, setDesc] = useState("");
 
-  function handleCreate() {
+  async function handleCreate() {
     if (!title || !date || !desc) {
       alert("All fields are required!");
       return;
     }
 
-    const oldData = JSON.parse(localStorage.getItem("workshops") || "[]");
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch((import.meta.env.VITE_API_URL || '') + '/api/workshops', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: 'Bearer ' + token } : {})
+        },
+        body: JSON.stringify({ title, date, desc })
+      });
 
-    const newWorkshop = {
-      id: Date.now(),
-      title,
-      date,
-      desc,
-    };
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || 'Failed to create workshop');
+        return;
+      }
 
-    localStorage.setItem("workshops", JSON.stringify([...oldData, newWorkshop]));
-
-    alert("Workshop Created Successfully!");
-    setTitle("");
-    setDate("");
-    setDesc("");
+      alert('Workshop Created Successfully!');
+      setTitle('');
+      setDate('');
+      setDesc('');
+    } catch (err) {
+      alert('Failed to create workshop');
+    }
   }
 
   return (
