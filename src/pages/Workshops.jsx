@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WorkshopCard from "../components/WorkshopCard";
-import { getAllWorkshops } from "../api/workshopService";
+import { getAllWorkshops, getWorkshopRegistrations } from "../api/workshopService";
 
 export default function Workshops() {
   const [workshops, setWorkshops] = useState([]);
@@ -11,14 +11,25 @@ export default function Workshops() {
       try {
         const data = await getAllWorkshops();
         if (!mounted) return;
-        setWorkshops(
-          data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            date: item.date ? String(item.date).split('T')[0] : 'TBD',
-            desc: item.description || '',
-          }))
+
+        // fetch registration counts for each workshop in parallel
+        const enriched = await Promise.all(
+          data.map(async (item) => {
+            const regs = await getWorkshopRegistrations(item.id);
+            const capacity = typeof item.capacity === 'number' && item.capacity > 0 ? item.capacity : 30;
+            return {
+              id: item.id,
+              title: item.title,
+              date: item.date ? String(item.date).split('T')[0] : 'TBD',
+              desc: item.description || '',
+              seatsFilled: regs ? regs.length : 0,
+              capacity,
+            };
+          })
         );
+
+        if (!mounted) return;
+        setWorkshops(enriched);
       } catch (_) {
         if (mounted) setWorkshops([]);
       }

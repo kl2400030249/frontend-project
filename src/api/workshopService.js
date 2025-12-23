@@ -19,6 +19,7 @@ const seed = () => {
         date: "2025-12-28",
         createdBy: "admin@example.com",
         createdAt: now,
+        capacity: 30,
       },
       {
         id: "w-2",
@@ -27,6 +28,7 @@ const seed = () => {
         date: "2026-01-10",
         createdBy: "admin@example.com",
         createdAt: now,
+        capacity: 30,
       },
     ];
 
@@ -64,6 +66,15 @@ export async function createWorkshop(payload) {
       throw new Error("Missing required fields");
     }
 
+    // Capacity is required and must be a positive number
+    if (payload.capacity === undefined || payload.capacity === null) {
+      throw new Error("Capacity must be a number greater than 0");
+    }
+    const capacity = Number(payload.capacity);
+    if (!capacity || capacity <= 0) {
+      throw new Error("Capacity must be a number greater than 0");
+    }
+
     const all = read(WORKSHOPS_KEY);
     const newWorkshop = {
       id: `w-${Date.now()}`,
@@ -72,6 +83,7 @@ export async function createWorkshop(payload) {
       date: payload.date,
       createdBy: payload.createdBy,
       createdAt: new Date().toISOString(),
+      capacity,
     };
 
     all.push(newWorkshop);
@@ -110,11 +122,16 @@ export async function registerForWorkshop(workshopId, studentEmail) {
     const found = workshops.find((w) => w.id === workshopId);
     if (!found) throw new Error("Workshop not found");
 
+    const capacity = typeof found.capacity === 'number' && found.capacity > 0 ? found.capacity : 30;
+
     const regs = read(REG_KEY);
     const existing = regs.find(
       (r) => r.workshopId === workshopId && r.studentEmail.toLowerCase() === studentEmail.toLowerCase()
     );
     if (existing) throw new Error("Already registered");
+
+    const currentCount = regs.filter((r) => r.workshopId === workshopId).length;
+    if (currentCount >= capacity) throw new Error("Workshop is full");
 
     const reg = { workshopId, studentEmail, registeredAt: new Date().toISOString() };
     regs.push(reg);

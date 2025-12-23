@@ -249,6 +249,33 @@ input:focus, textarea:focus {
   font-size: 16px;
 }
 
+/* ===== FORM CONTROLS: page-specific enhancements ===== */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc; /* soft light background */
+  color: #111827; /* dark text */
+  font-size: 15px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.form-control::placeholder {
+  color: #6b7280;
+}
+
+.form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+.form-control:disabled {
+  background: #e5e7eb;
+  cursor: not-allowed;
+}
+
 /* ===== SMALL UI POLISH ===== */
 .section {
   margin-bottom: 22px;

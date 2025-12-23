@@ -14,6 +14,22 @@ export default function ManageWorkshops() {
       setLoading(true);
       const all = await getAllWorkshops();
       setWorkshops(all);
+
+      // fetch initial registration counts for all workshops
+      try {
+        const pairs = await Promise.all(
+          all.map(async (w) => {
+            const regs = await getWorkshopRegistrations(w.id);
+            return { id: w.id, regs };
+          })
+        );
+        const map = {};
+        pairs.forEach((p) => (map[p.id] = { loading: false, error: "", regs: p.regs }));
+        setRegistrationsById(map);
+      } catch (err) {
+        // don't block loading workshops; set empty map
+        setRegistrationsById({});
+      }
     } catch (err) {
       setWorkshops([]);
     } finally {
@@ -77,6 +93,13 @@ export default function ManageWorkshops() {
                 <p style={{ marginBottom: "10px" }}>{w.description}</p>
 
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <div style={{ marginRight: 8 }}>
+                    <div style={{ fontWeight: 700 }}>Registrations: <span>{info.regs ? info.regs.length : 0}</span> / <span>{typeof w.capacity === 'number' ? w.capacity : 30}</span></div>
+                    {info.regs && info.regs.length >= (typeof w.capacity === 'number' ? w.capacity : 30) && (
+                      <span className="chip" style={{ marginTop: 6, display: 'inline-block', background: '#fff5f5', color: 'var(--danger, #c0392b)', marginLeft: 8 }}>Full</span>
+                    )}
+                  </div>
+
                   <button className="btn btn-outline" onClick={() => toggleRegistrations(w.id)}>
                     {isExpanded ? "Hide Registrations" : "View Registrations"}
                   </button>

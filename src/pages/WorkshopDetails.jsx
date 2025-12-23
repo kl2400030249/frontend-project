@@ -11,6 +11,7 @@ export default function WorkshopDetails() {
   const [loading, setLoading] = useState(true);
   const [regLoading, setRegLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [regCount, setRegCount] = useState(0);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -24,12 +25,11 @@ export default function WorkshopDetails() {
         if (!mounted) return;
         setWorkshop(found);
 
-        // check registration status if user is student
-        if (user && user.role === "student") {
-          const regs = await getWorkshopRegistrations(id);
-          const exists = regs.some((r) => r.studentEmail.toLowerCase() === user.email.toLowerCase());
-          setRegistered(Boolean(exists));
-        }
+        // check registration status and count if user is student
+        const regs = await getWorkshopRegistrations(id);
+        const exists = user && user.role === "student" ? regs.some((r) => r.studentEmail.toLowerCase() === user.email.toLowerCase()) : false;
+        setRegistered(Boolean(exists));
+        setRegCount(regs.length);
       } catch (err) {
         setMessage(err.message || "Failed to load workshop");
       } finally {
@@ -61,6 +61,7 @@ export default function WorkshopDetails() {
     try {
       await registerForWorkshop(id, user.email);
       setRegistered(true);
+      setRegCount((c) => c + 1);
       setMessage("Successfully registered.");
     } catch (err) {
       setMessage(err.message || "Registration failed");
@@ -72,16 +73,25 @@ export default function WorkshopDetails() {
   if (loading) return <div className="container">Loading...</div>;
   if (!workshop) return <div className="container">Workshop not found.</div>;
 
+  const capacity = typeof workshop.capacity === 'number' && workshop.capacity > 0 ? workshop.capacity : 30;
+  const isFull = regCount >= capacity;
+
   return (
     <div className="container">
       <h1 className="title">{workshop.title}</h1>
       <p className="muted">{workshop.date}</p>
       <p>{workshop.description}</p>
 
+      <p style={{ marginTop: 12 }}>Seats: <strong>{regCount}</strong> / <strong>{capacity}</strong> filled</p>
+
       {user && user.role === "student" ? (
         <div style={{ marginTop: 16 }}>
           {registered ? (
             <span className="chip">Already registered</span>
+          ) : isFull ? (
+            <button className="btn btn-outline" disabled>
+              Workshop Full
+            </button>
           ) : (
             <button className="btn btn-success" disabled={regLoading} onClick={handleRegister}>
               {regLoading ? "Registering..." : "Register for Workshop"}
