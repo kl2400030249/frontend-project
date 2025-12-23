@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { createWorkshop } from "../api/workshopService";
 
 export default function CreateWorkshop() {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [desc, setDesc] = useState("");
+  const { user } = useAuth();
 
   async function handleCreate() {
     if (!title || !date || !desc) {
@@ -12,28 +15,13 @@ export default function CreateWorkshop() {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch((import.meta.env.VITE_API_URL || '') + '/api/workshops', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: 'Bearer ' + token } : {})
-        },
-        body: JSON.stringify({ title, date, desc })
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.message || 'Failed to create workshop');
-        return;
-      }
-
+      await createWorkshop({ title, description: desc, date, createdBy: user.email });
       alert('Workshop Created Successfully!');
       setTitle('');
       setDate('');
       setDesc('');
     } catch (err) {
-      alert('Failed to create workshop');
+      alert(err?.message || 'Failed to create workshop');
     }
   }
 

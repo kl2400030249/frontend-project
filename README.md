@@ -33,3 +33,12 @@ Endpoints provided:
 - POST `/api/workshops` (requires `Authorization: Bearer <token>`)
 
 Note: This server is a small demo and not production-ready (no rate-limiting, validation middleware, etc.).
+
+## Authentication Design (Hackathon Scope)
+
+- This project uses localStorage to simulate authentication.
+- Admin accounts are pre-seeded (demo purpose).
+- New signups create student accounts only.
+- No backend or real database is used.
+- This design choice aligns with a frontend-only framework project.
+
