@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getStudentRegistrations, getAllWorkshops } from "../api/workshopService";
 
@@ -71,18 +72,39 @@ export default function Registrations() {
     <div className="container">
       <h1 className="title">My Registrations</h1>
 
-      <ul className="workshop-list">
+      <div className="list">
         {regs.map((r) => {
-          const wk = workshops.find((w) => w.id === r.workshopId) || { title: "Unknown workshop", date: "-", description: "" };
+          const wk = workshops.find((w) => w.id === r.workshopId) || { id: r.workshopId, title: "Unknown workshop", date: "-", description: "" };
+
+          // determine status: Upcoming if date >= today, Completed if date < today
+          const wkDate = wk.date ? new Date(wk.date) : null;
+          const today = new Date();
+          // normalize dates to YYYY-MM-DD for comparison
+          const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const isUpcoming = wkDate ? wkDate >= startOfToday : false;
+
           return (
-            <li key={`${r.workshopId}-${r.studentEmail}`} className="workshop-item">
-              <h3>{wk.title}</h3>
-              <p className="muted">{wk.date}</p>
-              <p>{wk.description}</p>
-            </li>
+            <div key={`${r.workshopId}-${r.studentEmail}`} className="card" style={{ marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                <div>
+                  <h3 className="sub-title" style={{ marginBottom: 6 }}>{wk.title}</h3>
+                  <p className="muted" style={{ marginBottom: 8 }}>{wk.date}</p>
+                  <p style={{ marginBottom: 10 }}>{wk.description}</p>
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <span className={`chip ${isUpcoming ? 'badge-upcoming' : 'badge-completed'}`} style={{ marginBottom: 8, display: 'inline-block' }}>{isUpcoming ? 'Upcoming' : 'Completed'}</span>
+
+                  <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                    <Link className="btn btn-outline" to={`/workshop/${wk.id}`}>View Details</Link>
+                    <button className="btn btn-success" onClick={(e) => e.preventDefault()}>Join Session</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }
